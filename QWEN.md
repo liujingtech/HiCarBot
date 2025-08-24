@@ -1,187 +1,146 @@
-# HiCarBot - Android自动化测试工具
+# HiCarBot - Android Automation Testing Tool
 
-## 项目概述
+## Project Overview
 
-HiCarBot是一个基于OCR识别的Android设备自动化测试工具，支持通过流水线配置实现复杂的自动化操作流程。它能够模拟用户在Android设备上的操作，如点击、输入、等待等，并通过OCR技术识别屏幕内容，实现智能化的自动化测试。
+HiCarBot is a modern Android automation testing tool that enables complex automation workflows through pipeline configuration. It simulates user operations on Android devices such as clicking, inputting, and waiting, and utilizes OCR technology to intelligently automate testing processes.
 
-主要技术栈：
+Key Technologies:
 - Python 3.x
-- pponnxcr (OCR识别库)
-- OpenCV (图像处理)
-- ADB (Android调试桥)
-- YAML (配置文件格式)
+- uiautomator2 (UI automation)
+- OpenCV (Image processing)
+- ADB (Android Debug Bridge)
+- YAML (Configuration format)
 
-## 项目结构
+## Modernized Project Structure
 
 ```
 HiCarBot/
-├── hicarbot/                 # 主源代码目录
-│   ├── core/                 # 核心功能模块
-│   ├── automation/           # 自动化流程配置文件
-│   ├── config/               # 配置管理
-│   ├── ocr/                  # OCR相关功能
-│   ├── utils/                # 工具函数
-│   └── resources/            # 资源文件
-├── docs/                     # 文档目录
-├── examples/                 # 使用示例
-├── tests/                    # 测试文件
-├── scripts/                  # 脚本文件
-├── data/                     # 数据文件
-├── requirements.txt          # 依赖包列表
-├── run.py                   # 项目运行入口
-└── README.md                # 项目说明文档
+├── hicarbot/                 # Main source directory
+│   ├── __init__.py           # Package initializer
+│   ├── main.py               # Main entry point
+│   ├── actions/              # Action implementations
+│   │   ├── __init__.py
+│   │   └── simple_bluetooth.py  # Simple Bluetooth toggle action
+│   ├── engine/               # Core execution engine
+│   │   ├── __init__.py
+│   │   └── pipeline_engine.py  # Pipeline execution engine
+│   ├── models/               # Data models
+│   │   ├── __init__.py
+│   │   └── models.py         # Core data structures
+│   └── utils/                # Utility functions
+│       ├── __init__.py
+├── examples/                 # Example configurations
+│   └── mvp_bluetooth_toggle.yaml  # Minimal Bluetooth toggle example
+├── requirements.txt         # Python dependencies
+├── run.py                   # Simple runner script
+└── README.md                # Project documentation
 ```
 
-## 核心组件
+## Core Components
 
-### 流水线引擎 (Pipeline Engine)
-位于 `hicarbot/core/pipeline_engine.py`，是自动化流程的核心调度器，负责：
-- 解析配置文件
-- 执行动作序列
-- 管理执行状态和数据上下文
+### Pipeline Engine
+Located at `hicarbot/engine/pipeline_engine.py`, this is the core scheduler responsible for:
+- Parsing configuration files
+- Executing action sequences
+- Managing execution state and data context
 
-### 动作执行器 (Action Executor)
-位于 `hicarbot/core/actions.py`，提供具体的动作实现：
-- OCR识别动作
-- 点击动作
-- 等待动作
-- 输入动作
-- 条件判断动作
+### Action System
+Located at `hicarbot/actions/`, provides concrete action implementations:
+- Simple Bluetooth Toggle Action (MVP implementation)
 
-### 配置解析器 (Config Parser)
-位于 `hicarbot/config/config_parser.py`，负责解析YAML/JSON格式的配置文件。
+### Configuration Parser
+Located at `hicarbot/engine/pipeline_engine.py`, handles YAML configuration file parsing.
 
-## 安装和运行
+## Installation and Usage
 
-### 安装依赖
+### Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 运行项目
+### Run the Project
 ```bash
-# 方法1: 使用run.py入口
+# Method 1: Using run.py entry point
 python run.py <pipeline_config.yaml>
 
-# 方法2: 直接运行主模块
+# Method 2: Direct module execution
 python hicarbot/main.py <pipeline_config.yaml>
 ```
 
-### 连接Android设备
-确保已安装ADB工具并添加到系统PATH中，Android设备已连接并启用USB调试。
+### Connect Android Device
+Ensure ADB tools are installed and added to system PATH, and Android device is connected with USB debugging enabled.
 
-## 配置文件格式
+## Configuration File Format
 
-支持YAML格式的配置文件，包含以下主要部分：
+Supports YAML format configuration files with the following main sections:
 
 ```yaml
-name: "流水线名称"
-version: "版本号"
-description: "描述信息"
+name: "Pipeline Name"
+version: "Version Number"
+description: "Description"
 
 variables:
-  key: "value"  # 变量定义
+  key: "value"  # Variable definitions
 
 actions:
-  - name: "动作名称"
-    type: "动作类型"
+  - name: "Action Name"
+    type: "Action Type"
     params:
-      # 动作参数
+      # Action parameters
 ```
 
-### 支持的动作类型
-1. **ocr**: 截图并进行OCR识别
-2. **click_text**: 点击指定文本
-3. **click_position**: 点击指定坐标
-4. **input**: 输入文本
-5. **wait**: 等待指定时间
-6. **set_variable**: 设置变量
+### Supported Action Types
+1. **simple_bluetooth_toggle**: Open Bluetooth settings and ensure it's enabled (MVP implementation)
 
-## 开发指南
+## Development Guide
 
-### 添加新的动作类型
-1. 在 `hicarbot/core/actions.py` 中创建新的动作类，继承自 `Action` 基类
-2. 实现 `execute` 方法
-3. 在 `hicarbot/core/pipeline_engine.py` 中注册新动作类型
+### Adding New Action Types
+1. Create a new action class in `hicarbot/actions/`, inheriting from the `Action` base class
+2. Implement the `execute` method
+3. Register the action in `hicarbot/engine/pipeline_engine.py`
 
-### 运行测试
-```bash
-python -m pytest tests/
-```
+### Run Tests
+Currently no automated tests are implemented. Manual testing is recommended.
 
-或运行特定测试文件：
-```bash
-python tests/test_pipeline.py
-```
+## Example Configuration
 
-## 示例配置
-
-### 登录流程测试
+### MVP Bluetooth Toggle
 ```yaml
-name: "登录流程测试"
+name: "MVP Bluetooth Toggle"
 version: "1.0"
-description: "测试Android应用的登录流程"
-
-variables:
-  username: "testuser"
-  password: "testpass123"
+description: "Minimal Bluetooth toggle - Open Bluetooth settings and ensure it's enabled"
 
 actions:
-  - name: "截图并OCR识别"
-    type: "ocr"
-  
-  - name: "点击用户名输入框"
-    type: "click_text"
-    params:
-      text: "用户名"
-  
-  - name: "输入用户名"
-    type: "input"
-    params:
-      text: "{{username}}"
-  
-  - name: "点击密码输入框"
-    type: "click_text"
-    params:
-      text: "密码"
-  
-  - name: "输入密码"
-    type: "input"
-    params:
-      text: "{{password}}"
-  
-  - name: "点击登录按钮"
-    type: "click_text"
-    params:
-      text: "登录"
+  - name: "Open Bluetooth and ensure enabled"
+    type: "simple_bluetooth_toggle"
 ```
 
-## 常用命令
+## Common Commands
 
-1. **查看连接的Android设备**:
+1. **View Connected Android Devices**:
    ```bash
    adb devices
    ```
 
-2. **获取设备屏幕尺寸**:
+2. **Get Device Screen Size**:
    ```bash
    adb shell wm size
    ```
 
-3. **运行示例流水线**:
+3. **Run Example Pipeline**:
    ```bash
-   python run.py hicarbot/automation/login_pipeline.yaml
+   python run.py examples/mvp_bluetooth_toggle.yaml
    ```
 
-## 贡献指南
+## Contribution Guidelines
 
-欢迎提交Issue和Pull Request来改进HiCarBot项目。
+Welcome to submit Issues and Pull Requests to improve the HiCarBot project.
 
-1. Fork项目
-2. 创建功能分支
-3. 提交更改
-4. 发起Pull Request
+1. Fork the project
+2. Create a feature branch
+3. Commit changes
+4. Submit a Pull Request
 
-## 许可证
+## License
 
-本项目采用 [LICENSE](LICENSE) 许可证。
+This project is licensed under the MIT License.
