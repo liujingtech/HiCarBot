@@ -1,0 +1,15 @@
+name: "精确点击蓝牙开关"
+version: "1.0"
+description: "通过改进的算法精确点击蓝牙开关"
+
+actions:
+  - name: "打开蓝牙设置"
+    type: "open_bluetooth"
+  
+  - name: "等待页面加载"
+    type: "wait"
+    params:
+      seconds: 3
+  
+  - name: "使用V2算法切换蓝牙"
+    type: "toggle_bluetooth_v2"

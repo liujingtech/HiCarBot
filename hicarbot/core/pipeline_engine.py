@@ -17,9 +17,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.models import DataContext
 from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
-from core.advanced_actions import ToggleBluetoothAction
+from core.advanced_actions import ToggleBluetoothAction, ToggleBluetoothActionV2
 from core.bluetooth_status import CheckBluetoothStatusAction
 from core.direct_bluetooth_control import EnableBluetoothAction, DisableBluetoothAction
+from core.calculate_switch_position import CalculateBluetoothSwitchPositionAction
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -41,9 +42,11 @@ class ActionExecutor:
             'condition': ConditionAction,
             'open_bluetooth': OpenBluetoothAction,
             'toggle_bluetooth': ToggleBluetoothAction,
+            'toggle_bluetooth_v2': ToggleBluetoothActionV2,
             'check_bluetooth_status': CheckBluetoothStatusAction,
             'enable_bluetooth': EnableBluetoothAction,
-            'disable_bluetooth': DisableBluetoothAction
+            'disable_bluetooth': DisableBluetoothAction,
+            'calculate_bluetooth_switch_position': CalculateBluetoothSwitchPositionAction
         }
     
     def take_screenshot(self) -> np.ndarray:

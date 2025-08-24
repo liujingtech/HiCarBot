@@ -29,6 +29,11 @@ class OCRAction(Action):
             if screenshot is None:
                 return False
             
+            # Check if screenshot is valid
+            if screenshot.size == 0 or screenshot.shape[0] < 100 or screenshot.shape[1] < 100:
+                print("截图无效或尺寸过小，可能屏幕未解锁")
+                return False
+            
             # Crop to region if specified
             if region:
                 x, y, w, h = region
@@ -43,8 +48,11 @@ class OCRAction(Action):
             
             # Print OCR results for debugging
             print(f"OCR识别结果 ({save_to}):")
-            for i, result in enumerate(ocr_results):
-                print(f"  {i+1}. 文本: '{result['text']}' 置信度: {result['confidence']:.2f} 位置: {result['center']}")
+            if len(ocr_results) == 0:
+                print("  未识别到任何文本，可能屏幕未解锁或页面未加载完成")
+            else:
+                for i, result in enumerate(ocr_results):
+                    print(f"  {i+1}. 文本: '{result['text']}' 置信度: {result['confidence']:.2f} 位置: {result['center']}")
             
             return True
         except Exception as e:
@@ -114,11 +122,13 @@ class ClickAction(Action):
             offset = self.params.get('offset', [0, 0])
             action_type = self.params.get('action', 'tap')
             
+            # Resolve variables in position
+            if position:
+                position = self._resolve_position_variables(position, context)
+            
             # Resolve variables in text
             if text:
-                original_text = text
                 text = self._resolve_variables(text, context)
-                print(f"变量解析: '{original_text}' -> '{text}'")
             
             # If text is specified, find it in OCR results
             if text:
@@ -195,6 +205,20 @@ class ClickAction(Action):
             # 替换 {{variable_name}} 格式的变量
             resolved = resolved.replace(f'{{{{{var_name}}}}}', str(var_value))
         return resolved
+    
+    def _resolve_position_variables(self, position: List, context: DataContext) -> List:
+        """Resolve variables in position coordinates"""
+        resolved_position = []
+        for coord in position:
+            if isinstance(coord, str) and coord.startswith('{{') and coord.endswith('}}'):
+                # Extract variable name
+                var_name = coord[2:-2]
+                # Resolve variable
+                var_value = context.variables.get(var_name, coord)
+                resolved_position.append(int(var_value))
+            else:
+                resolved_position.append(int(coord))
+        return resolved_position
 
 
 class WaitAction(Action):

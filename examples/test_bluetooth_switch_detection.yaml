@@ -1,0 +1,30 @@
+name: "测试蓝牙开关识别"
+version: "1.0"
+description: "测试蓝牙开关位置识别"
+
+actions:
+  - name: "打开蓝牙设置"
+    type: "open_bluetooth"
+  
+  - name: "等待页面加载"
+    type: "wait"
+    params:
+      seconds: 3
+  
+  - name: "截图并OCR识别"
+    type: "ocr"
+    params:
+      save_to: "bluetooth_page"
+  
+  - name: "显示所有识别结果"
+    type: "condition"
+    params:
+      expression: "True"
+  
+  - name: "计算蓝牙开关位置"
+    type: "calculate_bluetooth_switch_position"
+  
+  - name: "显示计算结果"
+    type: "condition"
+    params:
+      expression: "True"
