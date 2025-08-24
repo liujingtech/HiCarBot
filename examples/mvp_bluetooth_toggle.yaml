@@ -1,7 +1,7 @@
-name: "MVP蓝牙开关控制"
+name: "MVP Bluetooth Toggle"
 version: "1.0"
-description: "最简化的蓝牙开关控制 - 打开蓝牙设置页面并确保蓝牙已开启"
+description: "Minimal Bluetooth toggle - Open Bluetooth settings and ensure it's enabled"
 
 actions:
-  - name: "打开蓝牙并确保开启"
+  - name: "Open Bluetooth and ensure enabled"
     type: "simple_bluetooth_toggle"

@@ -1,11 +1,12 @@
 """
-Simple Bluetooth toggle action for MVP
+Simple Bluetooth Toggle Action
 This module provides a minimal implementation to open Bluetooth settings and toggle the switch.
 """
 
 import uiautomator2 as u2
 import time
-from core.models import Action, DataContext
+from typing import Dict, Any
+from hicarbot.models.models import Action, DataContext
 
 
 class SimpleBluetoothToggleAction(Action):
@@ -13,13 +14,13 @@ class SimpleBluetoothToggleAction(Action):
     
     def execute(self, context: DataContext) -> bool:
         try:
-            print("正在执行简单的蓝牙开关操作...")
+            print("Executing simple Bluetooth toggle action...")
             
             # Connect to device
             d = u2.connect()
             
             # Open Bluetooth settings
-            print("正在打开蓝牙设置页面...")
+            print("Opening Bluetooth settings page...")
             d.app_start("com.android.settings", stop=True)
             time.sleep(2)
             
@@ -32,18 +33,18 @@ class SimpleBluetoothToggleAction(Action):
             # Ensure Bluetooth is enabled
             self._ensure_bluetooth_enabled(d)
             
-            print("蓝牙开关操作完成")
+            print("Bluetooth toggle action completed")
             return True
             
         except Exception as e:
-            print(f"简单的蓝牙开关操作失败: {str(e)}")
+            print(f"Simple Bluetooth toggle action failed: {str(e)}")
             return False
     
     def _navigate_to_bluetooth(self, d):
         """Navigate to Bluetooth settings"""
         try:
             # Method 1: Direct intent
-            print("尝试通过intent打开蓝牙设置...")
+            print("Trying to open Bluetooth settings via intent...")
             d.shell('am start -a android.settings.BLUETOOTH_SETTINGS')
             time.sleep(2)
             
@@ -52,7 +53,7 @@ class SimpleBluetoothToggleAction(Action):
                 return
             
             # Method 2: Find "蓝牙" text and click it
-            print("尝试通过文本导航到蓝牙设置...")
+            print("Trying to navigate to Bluetooth settings via text...")
             bluetooth_elements = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']")
             if bluetooth_elements.exists:
                 bluetooth_elements.click()
@@ -60,7 +61,7 @@ class SimpleBluetoothToggleAction(Action):
                 return
                 
         except Exception as e:
-            print(f"导航到蓝牙设置失败: {str(e)}")
+            print(f"Failed to navigate to Bluetooth settings: {str(e)}")
     
     def _is_on_bluetooth_page(self, d):
         """Check if we're on Bluetooth settings page"""
@@ -73,7 +74,7 @@ class SimpleBluetoothToggleAction(Action):
     def _ensure_bluetooth_enabled(self, d):
         """Ensure Bluetooth is enabled"""
         try:
-            print("正在检查蓝牙状态...")
+            print("Checking Bluetooth status...")
             
             # Look for Bluetooth switch
             switch_elements = d(className="android.widget.Switch")
@@ -81,20 +82,20 @@ class SimpleBluetoothToggleAction(Action):
                 # Get switch status
                 info = switch_elements[0].info
                 is_checked = info.get('checked', False)
-                print(f"蓝牙开关状态: {'开启' if is_checked else '关闭'}")
+                print(f"Bluetooth switch status: {'enabled' if is_checked else 'disabled'}")
                 
                 # If not enabled, click to enable
                 if not is_checked:
-                    print("蓝牙未开启，正在打开蓝牙...")
+                    print("Bluetooth is disabled, enabling...")
                     switch_elements[0].click()
                     time.sleep(2)
-                    print("蓝牙已开启")
+                    print("Bluetooth enabled")
                 else:
-                    print("蓝牙已处于开启状态")
+                    print("Bluetooth is already enabled")
                 return  # Success
             
             # If no switch found, try alternative method
-            print("未找到蓝牙开关，尝试替代方法...")
+            print("Bluetooth switch not found, trying alternative method...")
             
             # Try clicking near "蓝牙" text
             bluetooth_elements = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']")
@@ -107,14 +108,14 @@ class SimpleBluetoothToggleAction(Action):
                 if right_x > 0 and center_y > 0:
                     d.click(right_x, center_y)
                     time.sleep(2)
-                    print("已尝试点击蓝牙开关位置")
+                    print("Tried clicking Bluetooth switch position")
                     return  # Assume success
             
             # Last resort: try to navigate to Bluetooth settings directly
-            print("尝试直接打开蓝牙设置...")
+            print("Trying to directly enable Bluetooth...")
             d.shell('am start -a android.bluetooth.adapter.action.REQUEST_ENABLE')
             time.sleep(3)
-            print("已发送蓝牙开启请求")
+            print("Sent Bluetooth enable request")
                 
         except Exception as e:
-            print(f"确保蓝牙开启失败: {str(e)}")
+            print(f"Failed to ensure Bluetooth is enabled: {str(e)}")

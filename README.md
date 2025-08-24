@@ -1,62 +1,112 @@
-# HiCarBot - Android自动化测试工具
+# HiCarBot - Modern Android Automation Framework
 
-HiCarBot是一个基于OCR识别的Android设备自动化测试工具，支持通过流水线配置实现复杂的自动化操作流程。
+HiCarBot is a modern Android automation framework designed with simplicity and reliability in mind. It focuses on direct UI manipulation rather than complex OCR processing, making it fast and accurate.
 
-## 功能特性
+## Key Features
 
-- OCR文字识别
-- 自动化点击
-- 流水线编排
-- 多种动作支持
+- **Direct UI Manipulation**: Uses UIAutomator2 for reliable UI element interaction
+- **Minimal Dependencies**: Only essential libraries for maximum stability
+- **Clean Architecture**: Well-organized modular structure
+- **Easy to Use**: Simple YAML configuration for defining automation flows
+- **Fast Execution**: No OCR processing overhead
 
-## 安装依赖
+## Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-确保已安装ADB工具并添加到系统PATH中。
+Make sure you have ADB installed and added to your system PATH.
 
-## 使用方法
+## Prerequisites
 
-1. 连接Android设备并启用USB调试
-2. 确保设备屏幕已解锁
-3. 编写流水线配置文件（YAML格式）
-4. 运行流水线：
+Before using HiCarBot, ensure:
+
+1. **Android device connected** via USB with USB debugging enabled
+2. **Device screen unlocked** - automation requires visible UI elements
+3. **Bluetooth settings accessible** - the app needs permission to access Bluetooth settings
+
+## Usage
+
+1. Connect your Android device and enable USB debugging
+2. Ensure the device screen is unlocked
+3. Run the automation pipeline:
    ```bash
    python run.py <pipeline_config.yaml>
    ```
 
-## 动作类型
+Or directly:
+```bash
+python hicarbot/main.py <pipeline_config.yaml>
+```
 
-1. **ocr**：截图并进行OCR识别
-2. **click_text**：点击指定文本
-3. **click_position**：点击指定坐标
-4. **input**：输入文本
-5. **wait**：等待指定时间
-6. **open_bluetooth**：打开蓝牙设置页面
-7. **simple_bluetooth_toggle**：打开蓝牙设置页面并确保蓝牙已开启
+## Example
 
-## 示例
+### MVP Bluetooth Toggle
 
-### MVP蓝牙开关控制
+The simplest and most reliable way to ensure Bluetooth is enabled:
 
 ```yaml
-name: "MVP蓝牙开关控制"
+name: "MVP Bluetooth Toggle"
 version: "1.0"
-description: "最简化的蓝牙开关控制 - 打开蓝牙设置页面并确保蓝牙已开启"
+description: "Minimal Bluetooth toggle - Open Bluetooth settings and ensure it's enabled"
 
 actions:
-  - name: "打开蓝牙并确保开启"
+  - name: "Open Bluetooth and ensure enabled"
     type: "simple_bluetooth_toggle"
 ```
 
-## 项目结构
+Run it with:
+```bash
+python run.py examples/mvp_bluetooth_toggle.yaml
+```
+
+This will:
+1. Open the Bluetooth settings page
+2. Check if Bluetooth is enabled
+3. If not enabled, automatically toggle the switch to enable it
+
+## Project Structure
 
 ```
 HiCarBot/
-├── hicarbot/                 # 主源代码目录
-│   ├── core/                 # 核心功能模块
-├── examples/                 # 使用示例
-└── requirements.txt          # 依赖包列表
+├── hicarbot/                 # Main source directory
+│   ├── __init__.py           # Package initializer
+│   ├── main.py               # Main entry point
+│   ├── actions/              # Action implementations
+│   │   ├── __init__.py
+│   │   └── simple_bluetooth.py  # Simple Bluetooth toggle action
+│   ├── engine/               # Core execution engine
+│   │   ├── __init__.py
+│   │   └── pipeline_engine.py  # Pipeline execution engine
+│   ├── models/               # Data models
+│   │   ├── __init__.py
+│   │   └── models.py         # Core data structures
+│   └── utils/                # Utility functions
+│       ├── __init__.py
+├── examples/                 # Example configurations
+│   └── mvp_bluetooth_toggle.yaml  # Minimal Bluetooth toggle example
+├── requirements.txt         # Python dependencies
+└── run.py                    # Simple runner script
 ```
+
+## Development
+
+### Adding New Actions
+
+1. Create a new action class in `hicarbot/actions/`
+2. Inherit from the base `Action` class
+3. Implement the `execute` method
+4. Register the action in `hicarbot/engine/pipeline_engine.py`
+
+### Running Tests
+
+Currently no automated tests are implemented. Manual testing is recommended.
+
+## Contributing
+
+Contributions are welcome! Please submit issues and pull requests to improve HiCarBot.
+
+## License
+
+This project is licensed under the MIT License.
