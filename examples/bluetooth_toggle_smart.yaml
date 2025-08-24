@@ -1,7 +1,0 @@
-name: "自动切换蓝牙状态"
-version: "1.0"
-description: "自动打开蓝牙设置页面并切换蓝牙开关状态"
-
-actions:
-  - name: "切换蓝牙状态"
-    type: "toggle_bluetooth"

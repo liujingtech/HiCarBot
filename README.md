@@ -126,15 +126,45 @@ actions:
 5. **wait**：等待指定时间
    - `seconds`: 等待的秒数
    
-9. **check_bluetooth_status**：检查蓝牙是否开启
+## 动作类型
+
+1. **ocr**：截图并进行OCR识别
+   - `region`: [x, y, width, height] - 可选，指定识别区域
+   - `language`: 语言类型，默认为'zhs'(简体中文)
+   - `save_to`: 保存结果的变量名
+
+2. **click_text**：点击指定文本
+   - `text`: 要点击的文本内容
+   - `offset`: [x, y] - 可选，点击位置偏移量
+   - `action`: 点击类型，'tap'(默认)或'long_press'
+
+3. **click_position**：点击指定坐标
+   - `position`: [x, y] - 点击的坐标位置
+
+4. **input**：输入文本
+   - `text`: 要输入的文本内容，支持变量替换
+
+5. **wait**：等待指定时间
+   - `seconds`: 等待的秒数
+
+6. **open_bluetooth**：打开蓝牙设置页面
+   - 无参数
+
+7. **check_bluetooth_status**：检查蓝牙是否开启
    - 无参数
    - 检查结果保存在变量 `is_bluetooth_enabled` 中
-   
-11. **check_bluetooth_status_ui**：使用UI Automator检测蓝牙状态
+
+8. **enable_bluetooth**：直接启用蓝牙（无需打开设置页面）
+   - 无参数
+
+9. **disable_bluetooth**：直接禁用蓝牙（无需打开设置页面）
+   - 无参数
+
+10. **check_bluetooth_status_ui**：使用UI Automator检测蓝牙状态
     - 无参数
     - 检查结果保存在变量 `is_bluetooth_enabled` 中
-    
-12. **toggle_bluetooth_ui**：使用UI Automator切换蓝牙开关状态
+
+11. **toggle_bluetooth_ui**：使用UI Automator切换蓝牙开关状态
     - 无参数
 
 ## 示例
@@ -274,7 +304,127 @@ actions:
       seconds: 3
 ```
 
-### 7. 使用UI Automator控制蓝牙
+## 示例
+
+### 1. 登录流程测试
+
+```yaml
+name: "登录流程测试"
+version: "1.0"
+description: "测试Android应用的登录流程"
+
+variables:
+  username: "testuser"
+  password: "testpass123"
+
+actions:
+  - name: "截图并OCR识别"
+    type: "ocr"
+  
+  - name: "点击用户名输入框"
+    type: "click_text"
+    params:
+      text: "用户名"
+  
+  - name: "输入用户名"
+    type: "input"
+    params:
+      text: "{{username}}"
+  
+  - name: "点击密码输入框"
+    type: "click_text"
+    params:
+      text: "密码"
+  
+  - name: "输入密码"
+    type: "input"
+    params:
+      text: "{{password}}"
+  
+  - name: "点击登录按钮"
+    type: "click_text"
+    params:
+      text: "登录"
+  
+  - name: "等待登录完成"
+    type: "wait"
+    params:
+      seconds: 3
+      
+  - name: "验证登录结果"
+    type: "ocr"
+```
+
+### 2. 百度文章搜索与收藏
+
+```yaml
+name: "百度文章搜索与收藏"
+version: "1.0"
+description: "在百度App中搜索技术文章并收藏感兴趣的内容"
+
+variables:
+  search_keyword: "人工智能发展现状"
+
+actions:
+  - name: "启动百度App并截图OCR"
+    type: "ocr"
+  
+  - name: "等待应用加载完成"
+    type: "wait"
+    params:
+      seconds: 3
+  
+  - name: "点击搜索框"
+    type: "click_text"
+    params:
+      text: "搜索"
+  
+  - name: "输入搜索关键词"
+    type: "input"
+    params:
+      text: "{{search_keyword}}"
+  
+  - name: "点击搜索按钮"
+    type: "click_text"
+    params:
+      text: "百度一下"
+  
+  - name: "等待搜索结果加载"
+    type: "wait"
+    params:
+      seconds: 5
+  
+  - name: "截图检查搜索结果"
+    type: "ocr"
+  
+  - name: "点击第一篇技术文章"
+    type: "click_text"
+    params:
+      text: "技术"
+  
+  - name: "等待文章页面加载"
+    type: "wait"
+    params:
+      seconds: 4
+  
+  - name: "截图文章页面"
+    type: "ocr"
+  
+  - name: "查找并点击收藏按钮"
+    type: "click_text"
+    params:
+      text: "收藏"
+  
+  - name: "等待收藏操作完成"
+    type: "wait"
+    params:
+      seconds: 2
+  
+  - name: "最终截图确认收藏成功"
+    type: "ocr"
+```
+
+### 3. 使用UI Automator控制蓝牙
 
 ```yaml
 name: "使用UI Automator控制蓝牙示例"
