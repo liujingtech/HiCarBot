@@ -65,27 +65,27 @@ class CheckBluetoothStatusWithUIAction(Action):
             # Method 2: Navigate through Settings app
             print("尝试通过设置应用导航到蓝牙设置...")
             # Look for "蓝牙" or "Bluetooth" text
-            bluetooth_elements = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']").all()
-            if bluetooth_elements:
-                bluetooth_elements[0].click()
+            bluetooth_elements = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']")
+            if bluetooth_elements.exists:
+                bluetooth_elements.click()
                 time.sleep(2)
                 return
             
             # Method 3: Search for Bluetooth in settings
             print("尝试在设置中搜索蓝牙...")
-            search_elements = d.xpath("//*[@text='搜索' or @text='Search']").all()
-            if search_elements:
-                search_elements[0].click()
+            search_elements = d.xpath("//*[@text='搜索' or @text='Search']")
+            if search_elements.exists:
+                search_elements.click()
                 time.sleep(1)
                 # Input "蓝牙" in search box
-                search_boxes = d.xpath("//android.widget.EditText").all()
-                if search_boxes:
-                    search_boxes[0].set_text("蓝牙")
+                search_boxes = d.xpath("//android.widget.EditText")
+                if search_boxes.exists:
+                    search_boxes.set_text("蓝牙")
                     time.sleep(1)
                     # Click search result
-                    result_elements = d.xpath("//*[@text='蓝牙']").all()
-                    if result_elements:
-                        result_elements[0].click()
+                    result_elements = d.xpath("//*[@text='蓝牙']")
+                    if result_elements.exists:
+                        result_elements.click()
                         time.sleep(2)
                         return
             
@@ -110,40 +110,47 @@ class CheckBluetoothStatusWithUIAction(Action):
             # Try to find switch near "蓝牙" text
             bluetooth_text = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']")
             if bluetooth_text.exists:
-                # Get the bounds of the Bluetooth text
-                bounds = bluetooth_text.get().bounds
-                # Look for a switch in the same row (to the right)
-                switch_elements = d.xpath(f"//android.widget.Switch[@bounds='{bounds}']/following-sibling::android.widget.Switch")
-                if switch_elements.exists:
-                    # Check if switch is checked (enabled)
-                    switch_info = switch_elements.get()
-                    is_checked = getattr(switch_info, 'checked', False)
-                    print(f"找到蓝牙开关，状态: {'开启' if is_checked else '关闭'}")
-                    return is_checked
+                # For now, we'll just check if we can find any switch
+                switch_elements = d(className="android.widget.Switch")
+                if len(switch_elements) > 0:
+                    # Check if first switch is checked (enabled)
+                    try:
+                        info = switch_elements[0].info
+                        is_checked = info.get('checked', False)
+                        print(f"找到蓝牙开关，状态: {'开启' if is_checked else '关闭'}")
+                        return is_checked
+                    except:
+                        pass
             
             # Method 2: Look for any switch elements and check if they're related to Bluetooth
             switch_elements = d(className="android.widget.Switch")
             for switch in switch_elements:
                 # Check if this switch is in the upper part of screen and likely Bluetooth switch
-                info = switch.info
-                bounds = info.get('bounds', {})
-                if bounds.get('top', 0) < 500:  # Likely in header area
-                    is_checked = info.get('checked', False)
-                    print(f"找到顶部开关，状态: {'开启' if is_checked else '关闭'}")
-                    return is_checked
+                try:
+                    info = switch.info
+                    bounds = info.get('bounds', {})
+                    if bounds.get('top', 0) < 500:  # Likely in header area
+                        is_checked = info.get('checked', False)
+                        print(f"找到顶部开关，状态: {'开启' if is_checked else '关闭'}")
+                        return is_checked
+                except:
+                    continue
             
             # Method 3: Look for status text
             print("通过文本查找蓝牙状态...")
             status_elements = d.xpath("//*[@text='开启' or @text='关闭' or @text='ON' or @text='OFF']")
-            for element in status_elements:
-                info = element.get()
-                text = getattr(info, 'text', '').upper()
-                if '开启' in text or 'ON' in text:
-                    print("检测到蓝牙已开启")
-                    return True
-                elif '关闭' in text or 'OFF' in text:
-                    print("检测到蓝牙已关闭")
-                    return False
+            if status_elements.exists:
+                try:
+                    info = status_elements.get_last_match()
+                    text = info.get('text', '').upper()
+                    if '开启' in text or 'ON' in text:
+                        print("检测到蓝牙已开启")
+                        return True
+                    elif '关闭' in text or 'OFF' in text:
+                        print("检测到蓝牙已关闭")
+                        return False
+                except:
+                    pass
             
             # Method 4: Look for Bluetooth device list (indicates Bluetooth is on)
             print("通过设备列表查找蓝牙状态...")
@@ -239,14 +246,12 @@ class ToggleBluetoothWithUIAction(Action):
             # Try to find switch near "蓝牙" text
             bluetooth_text = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']")
             if bluetooth_text.exists:
-                # Get the bounds of the Bluetooth text
-                bounds = bluetooth_text.get().bounds
-                # Look for a switch in the same row (to the right)
-                switch_elements = d.xpath("//android.widget.Switch")
-                if switch_elements.exists:
+                # Look for a switch in the same area
+                switch_elements = d(className="android.widget.Switch")
+                if len(switch_elements) > 0:
                     print("找到蓝牙开关，正在切换...")
-                    # Click the switch
-                    switch_elements.click()
+                    # Click the first switch
+                    switch_elements[0].click()
                     time.sleep(1)
                     return True
             
@@ -256,15 +261,18 @@ class ToggleBluetoothWithUIAction(Action):
             bluetooth_elements = d.xpath("//*[@text='蓝牙' or @text='Bluetooth']")
             if bluetooth_elements.exists:
                 # Get element bounds
-                info = bluetooth_elements.get()
-                bounds = getattr(info, 'bounds', {})
-                # Click to the right of the text (where switch usually is)
-                right_x = bounds.get('right', 0) + 100
-                center_y = (bounds.get('top', 0) + bounds.get('bottom', 0)) // 2
-                if right_x > 0 and center_y > 0:
-                    d.click(right_x, center_y)
-                    time.sleep(1)
-                    return True
+                try:
+                    info = bluetooth_elements.get_last_match()
+                    bounds = info.bounds
+                    # Click to the right of the text (where switch usually is)
+                    right_x = bounds.get('right', 0) + 100
+                    center_y = (bounds.get('top', 0) + bounds.get('bottom', 0)) // 2
+                    if right_x > 0 and center_y > 0:
+                        d.click(right_x, center_y)
+                        time.sleep(1)
+                        return True
+                except:
+                    pass
             
             print("未找到蓝牙开关")
             return False
