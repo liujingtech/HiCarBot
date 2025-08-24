@@ -17,7 +17,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.models import DataContext
 from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
-from core.bluetooth_ui_automator import CheckBluetoothStatusWithUIAction, ToggleBluetoothWithUIAction
 from core.simple_bluetooth import SimpleBluetoothToggleAction
 
 # 配置日志
@@ -30,6 +29,7 @@ class ActionExecutor:
     
     def __init__(self, data_context: DataContext):
         self.data_context = data_context
+        self.pipeline_engine = None
         # 动作类型映射
         self.action_mapping = {
             'ocr': OCRAction,
@@ -39,8 +39,6 @@ class ActionExecutor:
             'input': InputAction,
             'condition': ConditionAction,
             'open_bluetooth': OpenBluetoothAction,
-            'check_bluetooth_status_ui': CheckBluetoothStatusWithUIAction,
-            'toggle_bluetooth_ui': ToggleBluetoothWithUIAction,
             'simple_bluetooth_toggle': SimpleBluetoothToggleAction
         }
     

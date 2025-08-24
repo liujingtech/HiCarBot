@@ -1,7 +1,0 @@
-name: "UI Automator切换蓝牙"
-version: "1.0"
-description: "使用UI Automator切换蓝牙开关"
-
-actions:
-  - name: "切换蓝牙状态"
-    type: "toggle_bluetooth_ui"
