@@ -114,16 +114,26 @@ class ClickAction(Action):
             offset = self.params.get('offset', [0, 0])
             action_type = self.params.get('action', 'tap')
             
+            # Resolve variables in text
+            if text:
+                original_text = text
+                text = self._resolve_variables(text, context)
+                print(f"变量解析: '{original_text}' -> '{text}'")
+            
             # If text is specified, find it in OCR results
             if text:
                 position = self._find_text_position(text, context, offset)
                 if position is None:
+                    print(f"未找到文本 '{text}'")
                     return False
+                else:
+                    print(f"找到文本 '{text}'，点击位置: {position}")
             
             # Execute the click action
             if position:
                 return self._execute_click(position, action_type)
             
+            print("未提供有效的点击位置")
             return False
         except Exception as e:
             print(f"Click action failed: {str(e)}")
@@ -132,21 +142,42 @@ class ClickAction(Action):
     def _find_text_position(self, target_text: str, context: DataContext, offset: List[int]):
         """Find text position in OCR results"""
         # Search in OCR results
-        for result_set in context.ocr_results.values():
+        exact_match = None
+        partial_match = None
+        
+        for result_set_key, result_set in context.ocr_results.items():
             if isinstance(result_set, list):
                 for item in result_set:
-                    if target_text in item.get('text', ''):
-                        center = item['center']
-                        return [
-                            center[0] + offset[0],
-                            center[1] + offset[1]
-                        ]
+                    item_text = item.get('text', '')
+                    # 精确匹配
+                    if target_text == item_text:
+                        exact_match = (result_set_key, item)
+                        break
+                    # 包含匹配（作为备选）
+                    elif target_text in item_text and partial_match is None:
+                        partial_match = (result_set_key, item)
+        
+        # 优先使用精确匹配
+        match = exact_match if exact_match else partial_match
+        
+        if match:
+            result_set_key, item = match
+            center = item['center']
+            position = [
+                center[0] + offset[0],
+                center[1] + offset[1]
+            ]
+            match_type = "精确" if exact_match else "包含"
+            print(f"在OCR结果'{result_set_key}'中找到{match_type}匹配文本'{target_text}': {item['text']} 位置:{item['center']}, 偏移后位置:{position}")
+            return position
+        
         return None
     
     def _execute_click(self, position: List[int], action_type: str) -> bool:
         """Execute click action using ADB"""
         try:
             x, y = position
+            print(f"执行点击操作: {action_type} at ({x}, {y})")
             if action_type == 'tap':
                 os.system(f'adb shell input tap {x} {y}')
             elif action_type == 'long_press':
@@ -156,6 +187,14 @@ class ClickAction(Action):
         except Exception as e:
             print(f"Failed to execute click: {str(e)}")
             return False
+    
+    def _resolve_variables(self, text: str, context: DataContext) -> str:
+        """Resolve variables in text"""
+        resolved = text
+        for var_name, var_value in context.variables.items():
+            # 替换 {{variable_name}} 格式的变量
+            resolved = resolved.replace(f'{{{{{var_name}}}}}', str(var_value))
+        return resolved
 
 
 class WaitAction(Action):
@@ -226,10 +265,21 @@ class ConditionAction(Action):
             
             # Evaluate the condition
             result = self._evaluate_expression(expression, context)
+            print(f"条件表达式 '{expression}' 的结果: {result}")
             
-            # In a full implementation, we would execute the appropriate branch
-            # For now, we're just returning the evaluation result
-            return True
+            # Execute the appropriate branch
+            branch_to_execute = if_true if result else if_false
+            if branch_to_execute:
+                # In a full implementation, we would execute the branch actions
+                # For now, we're just printing what would be executed
+                print(f"将执行分支: {branch_to_execute}")
+                # Here you would normally execute the actions in the branch
+                # For demonstration, we'll just return True
+                return True
+            else:
+                print("没有需要执行的分支")
+                return True
+                
         except Exception as e:
             print(f"Condition action failed: {str(e)}")
             return False

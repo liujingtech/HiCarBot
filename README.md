@@ -79,11 +79,15 @@ actions:
 5. **wait**：等待指定时间
    - `seconds`: 等待的秒数
    
-6. **open_bluetooth**：打开蓝牙设置页面
+7. **open_bluetooth**：打开蓝牙设置页面
    - 无参数
    
-7. **toggle_bluetooth**：自动打开蓝牙设置页面并切换蓝牙开关状态
+8. **toggle_bluetooth**：自动打开蓝牙设置页面并切换蓝牙开关状态
    - 无参数
+   
+9. **check_bluetooth_status**：检查蓝牙是否开启
+   - 无参数
+   - 检查结果保存在变量 `is_bluetooth_enabled` 中
 
 ## 示例
 
@@ -222,16 +226,29 @@ actions:
       seconds: 3
 ```
 
-### 4. 自动切换蓝牙状态
+### 5. 检查蓝牙状态
 
 ```yaml
-name: "自动切换蓝牙状态"
+name: "检查蓝牙状态示例"
 version: "1.0"
-description: "自动打开蓝牙设置页面并切换蓝牙开关状态"
+description: "检查蓝牙是否开启的示例"
 
 actions:
-  - name: "切换蓝牙状态"
-    type: "toggle_bluetooth"
+  - name: "检查蓝牙是否开启"
+    type: "check_bluetooth_status"
+  
+  - name: "根据状态执行不同操作"
+    type: "condition"
+    params:
+      expression: "is_bluetooth_enabled"
+      if_true:
+        - name: "蓝牙已开启"
+          type: "wait"
+          params:
+            seconds: 1
+      if_false:
+        - name: "蓝牙未开启，打开蓝牙"
+          type: "toggle_bluetooth"
 ```
 
 更多示例请查看 `hicarbot/automation/` 目录下的配置文件。

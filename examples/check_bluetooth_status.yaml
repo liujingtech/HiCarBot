@@ -1,0 +1,12 @@
+name: "检查蓝牙状态示例"
+version: "1.0"
+description: "检查蓝牙是否开启的示例"
+
+actions:
+  - name: "检查蓝牙是否开启"
+    type: "check_bluetooth_status"
+  
+  - name: "显示蓝牙状态"
+    type: "condition"
+    params:
+      expression: "is_bluetooth_enabled"

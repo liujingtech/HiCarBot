@@ -23,6 +23,8 @@ actions:
     type: "click_text"
     params:
       text: "{{bluetooth_keyword}}"
+      offset: [166, 247]
+
   
   - name: "等待蓝牙设置页面加载"
     type: "wait"
