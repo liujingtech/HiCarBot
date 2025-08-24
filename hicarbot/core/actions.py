@@ -281,6 +281,14 @@ class InputAction(Action):
 class ConditionAction(Action):
     """Condition Action for branching logic"""
     
+    def __init__(self, name: str, params: Dict[str, Any]):
+        super().__init__(name, params)
+        self.action_executor = None  # Will be set by PipelineEngine
+    
+    def set_action_executor(self, action_executor):
+        """Set the action executor for executing branch actions"""
+        self.action_executor = action_executor
+    
     def execute(self, context: DataContext) -> bool:
         try:
             expression = self.params.get('expression', 'True')
@@ -294,11 +302,16 @@ class ConditionAction(Action):
             # Execute the appropriate branch
             branch_to_execute = if_true if result else if_false
             if branch_to_execute:
-                # In a full implementation, we would execute the branch actions
-                # For now, we're just printing what would be executed
                 print(f"将执行分支: {branch_to_execute}")
-                # Here you would normally execute the actions in the branch
-                # For demonstration, we'll just return True
+                # Execute branch actions
+                if self.action_executor:
+                    for action_config in branch_to_execute:
+                        success = self.action_executor.execute_action(action_config)
+                        if not success:
+                            print(f"分支动作执行失败: {action_config}")
+                            return False
+                else:
+                    print("警告: 未设置动作执行器，无法执行分支动作")
                 return True
             else:
                 print("没有需要执行的分支")

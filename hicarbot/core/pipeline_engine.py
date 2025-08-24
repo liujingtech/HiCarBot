@@ -18,6 +18,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.models import DataContext
 from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
 from core.bluetooth_ui_automator import CheckBluetoothStatusWithUIAction, ToggleBluetoothWithUIAction
+from core.simple_bluetooth import SimpleBluetoothToggleAction
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -39,7 +40,8 @@ class ActionExecutor:
             'condition': ConditionAction,
             'open_bluetooth': OpenBluetoothAction,
             'check_bluetooth_status_ui': CheckBluetoothStatusWithUIAction,
-            'toggle_bluetooth_ui': ToggleBluetoothWithUIAction
+            'toggle_bluetooth_ui': ToggleBluetoothWithUIAction,
+            'simple_bluetooth_toggle': SimpleBluetoothToggleAction
         }
     
     def take_screenshot(self) -> np.ndarray:
@@ -157,6 +159,9 @@ class ActionExecutor:
         # 创建并执行动作
         try:
             action = action_class(name, params)
+            # If it's a condition action, set the action executor
+            if isinstance(action, ConditionAction):
+                action.set_action_executor(self)
             return action.execute(self.data_context)
         except Exception as e:
             logger.error(f"执行动作 {name} 时发生错误: {str(e)}")
@@ -186,6 +191,8 @@ class PipelineEngine:
         self.data_context = DataContext()
         self.action_executor = ActionExecutor(self.data_context)
         self.config = None
+        # Set the action executor for condition actions
+        self.action_executor.pipeline_engine = self
     
     def load_config(self, config_file: str):
         """加载配置文件"""

@@ -1,0 +1,7 @@
+name: "MVP蓝牙开关控制"
+version: "1.0"
+description: "最简化的蓝牙开关控制 - 打开蓝牙设置页面并确保蓝牙已开启"
+
+actions:
+  - name: "打开蓝牙并确保开启"
+    type: "simple_bluetooth_toggle"
