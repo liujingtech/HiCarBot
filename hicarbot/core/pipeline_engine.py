@@ -19,6 +19,7 @@ from core.models import DataContext
 from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
 from core.advanced_actions import ToggleBluetoothAction, ToggleBluetoothActionV2
 from core.bluetooth_status import CheckBluetoothStatusAction
+from core.bluetooth_ui_automator import CheckBluetoothStatusWithUIAction, ToggleBluetoothWithUIAction
 from core.direct_bluetooth_control import EnableBluetoothAction, DisableBluetoothAction
 from core.calculate_switch_position import CalculateBluetoothSwitchPositionAction
 
@@ -44,6 +45,8 @@ class ActionExecutor:
             'toggle_bluetooth': ToggleBluetoothAction,
             'toggle_bluetooth_v2': ToggleBluetoothActionV2,
             'check_bluetooth_status': CheckBluetoothStatusAction,
+            'check_bluetooth_status_ui': CheckBluetoothStatusWithUIAction,
+            'toggle_bluetooth_ui': ToggleBluetoothWithUIAction,
             'enable_bluetooth': EnableBluetoothAction,
             'disable_bluetooth': DisableBluetoothAction,
             'calculate_bluetooth_switch_position': CalculateBluetoothSwitchPositionAction

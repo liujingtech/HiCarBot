@@ -1,0 +1,20 @@
+name: "智能蓝牙控制（UI Automator版）"
+version: "1.0"
+description: "使用UI Automator智能控制蓝牙"
+
+actions:
+  - name: "检测蓝牙状态"
+    type: "check_bluetooth_status_ui"
+  
+  - name: "根据状态控制蓝牙"
+    type: "condition"
+    params:
+      expression: "is_bluetooth_enabled"
+      if_true:
+        - name: "蓝牙已开启，保持开启状态"
+          type: "wait"
+          params:
+            seconds: 1
+      if_false:
+        - name: "蓝牙未开启，打开蓝牙"
+          type: "toggle_bluetooth_ui"

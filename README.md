@@ -130,10 +130,11 @@ actions:
    - 无参数
    - 检查结果保存在变量 `is_bluetooth_enabled` 中
    
-10. **enable_bluetooth**：尝试直接启用蓝牙（需要系统权限，可能需要手动确认）
+11. **check_bluetooth_status_ui**：使用UI Automator检测蓝牙状态
     - 无参数
+    - 检查结果保存在变量 `is_bluetooth_enabled` 中
     
-11. **disable_bluetooth**：尝试直接禁用蓝牙（需要系统权限，可能需要手动确认）
+12. **toggle_bluetooth_ui**：使用UI Automator切换蓝牙开关状态
     - 无参数
 
 ## 示例
@@ -273,29 +274,36 @@ actions:
       seconds: 3
 ```
 
-### 6. 直接控制蓝牙
+### 7. 使用UI Automator控制蓝牙
 
 ```yaml
-name: "直接控制蓝牙示例"
+name: "使用UI Automator控制蓝牙示例"
 version: "1.0"
-description: "尝试直接启用或禁用蓝牙的示例（可能需要手动确认）"
+description: "使用UI Automator检测和控制蓝牙状态的示例"
 
 actions:
-  - name: "启用蓝牙"
-    type: "enable_bluetooth"
+  - name: "检测蓝牙状态"
+    type: "check_bluetooth_status_ui"
   
-  - name: "等待蓝牙启用"
-    type: "wait"
+  - name: "根据状态控制蓝牙"
+    type: "condition"
     params:
-      seconds: 2
-  
-  - name: "禁用蓝牙"
-    type: "disable_bluetooth"
+      expression: "is_bluetooth_enabled"
+      if_true:
+        - name: "蓝牙已开启"
+          type: "wait"
+          params:
+            seconds: 1
+      if_false:
+        - name: "蓝牙未开启，打开蓝牙"
+          type: "toggle_bluetooth_ui"
 ```
 
-**注意**：由于Android系统的安全限制，直接通过命令控制蓝牙可能不成功。
-在Android 6.0及以上版本中，需要系统级权限才能直接控制蓝牙。
-如果命令执行失败，系统将自动打开蓝牙设置页面供手动操作。
+**优势**：
+- 不依赖OCR识别，更加准确可靠
+- 直接操作UI元素，无需计算坐标
+- 不受屏幕亮度、字体大小等因素影响
+- 可以准确检测开关状态
 
 更多示例请查看 `hicarbot/automation/` 目录下的配置文件。
 
