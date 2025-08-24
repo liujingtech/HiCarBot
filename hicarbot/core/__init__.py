@@ -8,6 +8,7 @@ from .pipeline_engine import PipelineEngine
 from .actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
 from .advanced_actions import ToggleBluetoothAction
 from .bluetooth_status import CheckBluetoothStatusAction
+from .direct_bluetooth_control import EnableBluetoothAction, DisableBluetoothAction
 
 __all__ = [
     "DataContext",
@@ -20,5 +21,7 @@ __all__ = [
     "ConditionAction",
     "OpenBluetoothAction",
     "ToggleBluetoothAction",
-    "CheckBluetoothStatusAction"
+    "CheckBluetoothStatusAction",
+    "EnableBluetoothAction",
+    "DisableBluetoothAction"
 ]

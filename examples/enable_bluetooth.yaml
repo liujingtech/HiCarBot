@@ -1,0 +1,12 @@
+name: "启用蓝牙示例"
+version: "1.0"
+description: "直接启用蓝牙的示例"
+
+actions:
+  - name: "启用蓝牙"
+    type: "enable_bluetooth"
+  
+  - name: "等待蓝牙启用"
+    type: "wait"
+    params:
+      seconds: 2

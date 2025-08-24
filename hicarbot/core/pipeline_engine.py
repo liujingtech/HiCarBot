@@ -19,6 +19,7 @@ from core.models import DataContext
 from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
 from core.advanced_actions import ToggleBluetoothAction
 from core.bluetooth_status import CheckBluetoothStatusAction
+from core.direct_bluetooth_control import EnableBluetoothAction, DisableBluetoothAction
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -40,7 +41,9 @@ class ActionExecutor:
             'condition': ConditionAction,
             'open_bluetooth': OpenBluetoothAction,
             'toggle_bluetooth': ToggleBluetoothAction,
-            'check_bluetooth_status': CheckBluetoothStatusAction
+            'check_bluetooth_status': CheckBluetoothStatusAction,
+            'enable_bluetooth': EnableBluetoothAction,
+            'disable_bluetooth': DisableBluetoothAction
         }
     
     def take_screenshot(self) -> np.ndarray:
