@@ -38,8 +38,13 @@ class OCRAction(Action):
             ocr_results = self._perform_ocr(screenshot, language)
             
             # Save results to context
-            context.ocr_results[save_to] = ocr_results
+            context.set_ocr_results(save_to, ocr_results)
             context.variables[save_to] = ocr_results
+            
+            # Print OCR results for debugging
+            print(f"OCR识别结果 ({save_to}):")
+            for i, result in enumerate(ocr_results):
+                print(f"  {i+1}. 文本: '{result['text']}' 置信度: {result['confidence']:.2f} 位置: {result['center']}")
             
             return True
         except Exception as e:

@@ -17,6 +17,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.models import DataContext
 from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
+from core.advanced_actions import ToggleBluetoothAction
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -36,7 +37,8 @@ class ActionExecutor:
             'wait': WaitAction,
             'input': InputAction,
             'condition': ConditionAction,
-            'open_bluetooth': OpenBluetoothAction
+            'open_bluetooth': OpenBluetoothAction,
+            'toggle_bluetooth': ToggleBluetoothAction
         }
     
     def take_screenshot(self) -> np.ndarray:

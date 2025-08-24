@@ -1,0 +1,23 @@
+name: "打开蓝牙并点击开关"
+version: "1.0"
+description: "打开蓝牙设置页面并点击蓝牙开关"
+
+actions:
+  - name: "打开蓝牙设置"
+    type: "open_bluetooth"
+  
+  - name: "等待页面加载"
+    type: "wait"
+    params:
+      seconds: 3
+  
+  - name: "截图并OCR识别"
+    type: "ocr"
+    params:
+      save_to: "bluetooth_page"
+  
+  - name: "点击蓝牙开关"
+    type: "click_text"
+    params:
+      text: "蓝牙"
+      offset: [300, 0]  # 根据实际页面调整偏移量

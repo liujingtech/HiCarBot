@@ -1,0 +1,22 @@
+name: "打开蓝牙并点击开关（坐标版）"
+version: "1.0"
+description: "打开蓝牙设置页面并点击蓝牙开关（通过坐标点击）"
+
+actions:
+  - name: "打开蓝牙设置"
+    type: "open_bluetooth"
+  
+  - name: "等待页面加载"
+    type: "wait"
+    params:
+      seconds: 3
+  
+  - name: "获取屏幕尺寸"
+    type: "condition"
+    params:
+      expression: "True"
+  
+  - name: "点击蓝牙开关"
+    type: "click_position"
+    params:
+      position: [700, 246]  # 根据屏幕宽度和OCR结果计算的大概位置

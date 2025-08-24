@@ -81,6 +81,9 @@ actions:
    
 6. **open_bluetooth**：打开蓝牙设置页面
    - 无参数
+   
+7. **toggle_bluetooth**：自动打开蓝牙设置页面并切换蓝牙开关状态
+   - 无参数
 
 ## 示例
 
@@ -217,6 +220,18 @@ actions:
     type: "wait"
     params:
       seconds: 3
+```
+
+### 4. 自动切换蓝牙状态
+
+```yaml
+name: "自动切换蓝牙状态"
+version: "1.0"
+description: "自动打开蓝牙设置页面并切换蓝牙开关状态"
+
+actions:
+  - name: "切换蓝牙状态"
+    type: "toggle_bluetooth"
 ```
 
 更多示例请查看 `hicarbot/automation/` 目录下的配置文件。

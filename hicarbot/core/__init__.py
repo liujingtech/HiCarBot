@@ -6,6 +6,7 @@ Core module for HiCarBot
 from .models import DataContext, Action
 from .pipeline_engine import PipelineEngine
 from .actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
+from .advanced_actions import ToggleBluetoothAction
 
 __all__ = [
     "DataContext",
@@ -16,5 +17,6 @@ __all__ = [
     "WaitAction",
     "InputAction",
     "ConditionAction",
-    "OpenBluetoothAction"
+    "OpenBluetoothAction",
+    "ToggleBluetoothAction"
 ]
