@@ -15,6 +15,8 @@ class EnableBluetoothAction(Action):
     def execute(self, context: DataContext) -> bool:
         try:
             print("正在尝试通过ADB直接启用蓝牙...")
+            print("注意：由于Android系统的安全限制，直接通过命令启用蓝牙可能不成功")
+            print("如果失败，将打开蓝牙设置页面供手动操作")
             
             # Method 1: Try using service call
             result = self._enable_bluetooth_via_service_call()
@@ -32,7 +34,7 @@ class EnableBluetoothAction(Action):
                 return True
             
             # Method 3: If both methods fail, use the open_bluetooth approach
-            print("ADB命令方法失败，尝试打开蓝牙设置页面...")
+            print("ADB命令方法失败，打开蓝牙设置页面供手动操作...")
             os.system('adb shell am start -a android.settings.BLUETOOTH_SETTINGS')
             time.sleep(2)  # Wait for page to load
             context.set_variable('bluetooth_enabled', None)  # Unknown state
@@ -47,7 +49,7 @@ class EnableBluetoothAction(Action):
         """Enable Bluetooth via service call"""
         try:
             # Enable Bluetooth using service call
-            # Command: service call bluetooth_manager 6
+            # Note: This may not work on Android 6.0+ due to security restrictions
             result = subprocess.run(
                 "adb shell service call bluetooth_manager 6",
                 shell=True,
@@ -59,8 +61,10 @@ class EnableBluetoothAction(Action):
                 output = result.stdout.strip()
                 print(f"Service call输出: {output}")
                 # Check if the call was successful
-                # Successful call typically returns something like "Result: Parcel(00000000 00000001 ..."
-                return "00000001" in output or "Parcel" in output
+                # Note: On newer Android versions, this often returns error messages
+                # rather than actual success indicators
+                if "Parcel" in output and "java" not in output:
+                    return True
             return False
         except Exception as e:
             print(f"Service call方法失败: {str(e)}")
@@ -70,6 +74,7 @@ class EnableBluetoothAction(Action):
         """Enable Bluetooth via settings command"""
         try:
             # Enable Bluetooth using settings command
+            # Note: This changes the setting but may not actually enable Bluetooth
             result = subprocess.run(
                 "adb shell settings put global bluetooth_on 1",
                 shell=True,
@@ -78,7 +83,7 @@ class EnableBluetoothAction(Action):
             )
             
             if result.returncode == 0:
-                print("已通过settings命令启用蓝牙")
+                print("已通过settings命令尝试启用蓝牙（可能需要手动确认）")
                 return True
             else:
                 print(f"Settings命令失败: {result.stderr}")
@@ -94,6 +99,8 @@ class DisableBluetoothAction(Action):
     def execute(self, context: DataContext) -> bool:
         try:
             print("正在尝试通过ADB直接禁用蓝牙...")
+            print("注意：由于Android系统的安全限制，直接通过命令禁用蓝牙可能不成功")
+            print("如果失败，将打开蓝牙设置页面供手动操作")
             
             # Method 1: Try using service call
             result = self._disable_bluetooth_via_service_call()
@@ -111,7 +118,7 @@ class DisableBluetoothAction(Action):
                 return True
             
             # Method 3: If both methods fail, use the open_bluetooth approach
-            print("ADB命令方法失败，尝试打开蓝牙设置页面...")
+            print("ADB命令方法失败，打开蓝牙设置页面供手动操作...")
             os.system('adb shell am start -a android.settings.BLUETOOTH_SETTINGS')
             time.sleep(2)  # Wait for page to load
             context.set_variable('bluetooth_enabled', None)  # Unknown state
@@ -126,7 +133,7 @@ class DisableBluetoothAction(Action):
         """Disable Bluetooth via service call"""
         try:
             # Disable Bluetooth using service call
-            # Command: service call bluetooth_manager 7
+            # Note: This may not work on Android 6.0+ due to security restrictions
             result = subprocess.run(
                 "adb shell service call bluetooth_manager 7",
                 shell=True,
@@ -138,7 +145,10 @@ class DisableBluetoothAction(Action):
                 output = result.stdout.strip()
                 print(f"Service call输出: {output}")
                 # Check if the call was successful
-                return "00000001" in output or "Parcel" in output
+                # Note: On newer Android versions, this often returns error messages
+                # rather than actual success indicators
+                if "Parcel" in output and "java" not in output:
+                    return True
             return False
         except Exception as e:
             print(f"Service call方法失败: {str(e)}")
@@ -148,6 +158,7 @@ class DisableBluetoothAction(Action):
         """Disable Bluetooth via settings command"""
         try:
             # Disable Bluetooth using settings command
+            # Note: This changes the setting but may not actually disable Bluetooth
             result = subprocess.run(
                 "adb shell settings put global bluetooth_on 0",
                 shell=True,
@@ -156,7 +167,7 @@ class DisableBluetoothAction(Action):
             )
             
             if result.returncode == 0:
-                print("已通过settings命令禁用蓝牙")
+                print("已通过settings命令尝试禁用蓝牙（可能需要手动确认）")
                 return True
             else:
                 print(f"Settings命令失败: {result.stderr}")

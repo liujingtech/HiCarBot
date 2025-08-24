@@ -83,10 +83,10 @@ actions:
    - 无参数
    - 检查结果保存在变量 `is_bluetooth_enabled` 中
    
-10. **enable_bluetooth**：直接启用蓝牙（无需打开设置页面）
+10. **enable_bluetooth**：尝试直接启用蓝牙（需要系统权限，可能需要手动确认）
     - 无参数
     
-11. **disable_bluetooth**：直接禁用蓝牙（无需打开设置页面）
+11. **disable_bluetooth**：尝试直接禁用蓝牙（需要系统权限，可能需要手动确认）
     - 无参数
 
 ## 示例
@@ -231,7 +231,7 @@ actions:
 ```yaml
 name: "直接控制蓝牙示例"
 version: "1.0"
-description: "直接启用或禁用蓝牙的示例"
+description: "尝试直接启用或禁用蓝牙的示例（可能需要手动确认）"
 
 actions:
   - name: "启用蓝牙"
@@ -245,6 +245,10 @@ actions:
   - name: "禁用蓝牙"
     type: "disable_bluetooth"
 ```
+
+**注意**：由于Android系统的安全限制，直接通过命令控制蓝牙可能不成功。
+在Android 6.0及以上版本中，需要系统级权限才能直接控制蓝牙。
+如果命令执行失败，系统将自动打开蓝牙设置页面供手动操作。
 
 更多示例请查看 `hicarbot/automation/` 目录下的配置文件。
 
