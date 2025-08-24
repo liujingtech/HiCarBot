@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 import pponnxcr
 from typing import Dict, Any, List
-from pipeline_engine import Action, DataContext
+from core.models import Action, DataContext
 
 
 class OCRAction(Action):
@@ -253,4 +253,17 @@ class ConditionAction(Action):
             return bool(eval(expression, eval_globals, eval_locals))
         except Exception as e:
             print(f"Failed to evaluate expression '{expression}': {str(e)}")
+            return False
+
+
+class OpenBluetoothAction(Action):
+    """Open Bluetooth Settings Action for launching Bluetooth settings page"""
+    
+    def execute(self, context: DataContext) -> bool:
+        try:
+            # Execute ADB command to open Bluetooth settings
+            os.system('adb shell am start -a android.settings.BLUETOOTH_SETTINGS')
+            return True
+        except Exception as e:
+            print(f"Open Bluetooth action failed: {str(e)}")
             return False

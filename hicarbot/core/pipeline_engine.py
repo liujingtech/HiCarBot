@@ -15,42 +15,12 @@ import sys
 # Add the parent directory to the Python path to allow imports from sibling directories
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.config_parser import ConfigParser
-from core.actions import ActionExecutor, DataContext
+from core.models import DataContext
+from core.actions import OCRAction, ClickAction, WaitAction, InputAction, ConditionAction, OpenBluetoothAction
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-
-class DataContext:
-    """数据上下文，用于存储和传递动作间的数据"""
-    
-    def __init__(self):
-        self.variables = {}
-        self.ocr_results = []
-        self.execution_history = []
-    
-    def set_variable(self, key: str, value: Any):
-        """设置变量"""
-        self.variables[key] = value
-        logger.debug(f"设置变量 {key} = {value}")
-    
-    def get_variable(self, key: str, default: Any = None) -> Any:
-        """获取变量"""
-        return self.variables.get(key, default)
-    
-    def set_ocr_results(self, results: List[Dict]):
-        """设置OCR识别结果"""
-        self.ocr_results = results
-        logger.debug(f"设置OCR结果，共{len(results)}个结果")
-    
-    def find_text_position(self, target_text: str) -> Optional[Dict]:
-        """根据文本查找位置信息"""
-        for result in self.ocr_results:
-            if target_text in result['text']:
-                return result
-        return None
 
 
 class ActionExecutor:
@@ -58,12 +28,21 @@ class ActionExecutor:
     
     def __init__(self, data_context: DataContext):
         self.data_context = data_context
+        # 动作类型映射
+        self.action_mapping = {
+            'ocr': OCRAction,
+            'click_text': ClickAction,
+            'click_position': ClickAction,
+            'wait': WaitAction,
+            'input': InputAction,
+            'condition': ConditionAction,
+            'open_bluetooth': OpenBluetoothAction
+        }
     
     def take_screenshot(self) -> np.ndarray:
         """使用ADB对Android设备进行截图"""
         logger.info("正在获取Android设备截图...")
         # 使用ADB截图并保存到本地
-        import os
         os.system('adb shell screencap -p /sdcard/screenshot.png')
         os.system('adb pull /sdcard/screenshot.png ./screenshot.png')
         os.system('adb shell rm /sdcard/screenshot.png')
@@ -126,7 +105,6 @@ class ActionExecutor:
     def click_on_position(self, x: int, y: int):
         """在指定坐标执行点击操作"""
         logger.info(f"正在点击坐标 ({x}, {y})")
-        import os
         os.system(f'adb shell input tap {x} {y}')
         time.sleep(0.5)  # 等待点击效果
     
@@ -154,11 +132,32 @@ class ActionExecutor:
     def input_text(self, text: str):
         """输入文本"""
         logger.info(f"输入文本: {text}")
-        import os
         # 将文本中的空格替换为%sp字符
         escaped_text = text.replace(' ', '%s').replace('"', '\\"')
         os.system(f'adb shell input text "{escaped_text}"')
         time.sleep(0.5)
+    
+    def execute_action(self, action_config: Dict) -> bool:
+        """执行单个动作"""
+        action_type = action_config.get('type')
+        params = action_config.get('params', {})
+        name = action_config.get('name', action_type)
+        
+        logger.info(f"执行动作: {name} ({action_type})")
+        
+        # 获取动作类
+        action_class = self.action_mapping.get(action_type)
+        if not action_class:
+            logger.warning(f"未知的动作类型: {action_type}")
+            return False
+        
+        # 创建并执行动作
+        try:
+            action = action_class(name, params)
+            return action.execute(self.data_context)
+        except Exception as e:
+            logger.error(f"执行动作 {name} 时发生错误: {str(e)}")
+            return False
 
 
 class ConfigParser:
@@ -190,80 +189,6 @@ class PipelineEngine:
         self.config = ConfigParser.parse(config_file)
         logger.info(f"流水线 '{self.config.get('name', 'Unknown')}' 加载完成")
     
-    def execute_action(self, action_config: Dict) -> bool:
-        """执行单个动作"""
-        action_type = action_config.get('type')
-        params = action_config.get('params', {})
-        name = action_config.get('name', action_type)
-        
-        logger.info(f"执行动作: {name} ({action_type})")
-        
-        try:
-            if action_type == 'ocr':
-                # 截图并OCR识别
-                screenshot = self.action_executor.take_screenshot()
-                ocr_results = self.action_executor.ocr_screenshot_with_position(screenshot)
-                self.data_context.set_ocr_results(ocr_results)
-                
-                # 输出识别结果
-                logger.info("OCR识别结果:")
-                for result in ocr_results:
-                    logger.info(f"  文字: {result['text']} (置信度: {result['confidence']:.2f}) 位置: {result['center']}")
-                    
-            elif action_type == 'click_position':
-                # 点击指定坐标
-                x = params.get('x')
-                y = params.get('y')
-                if x is not None and y is not None:
-                    self.action_executor.click_on_position(x, y)
-                else:
-                    logger.error("点击坐标动作缺少x或y参数")
-                    return False
-                    
-            elif action_type == 'click_text':
-                # 点击指定文本
-                text = params.get('text')
-                if text:
-                    return self.action_executor.click_on_text(text)
-                else:
-                    logger.error("点击文本动作缺少text参数")
-                    return False
-                    
-            elif action_type == 'wait':
-                # 等待
-                seconds = params.get('seconds', 1)
-                self.action_executor.wait(seconds)
-                
-            elif action_type == 'input':
-                # 输入文本
-                text = params.get('text')
-                if text:
-                    self.action_executor.input_text(text)
-                else:
-                    logger.error("输入文本动作缺少text参数")
-                    return False
-                    
-            elif action_type == 'set_variable':
-                # 设置变量
-                key = params.get('key')
-                value = params.get('value')
-                if key:
-                    self.data_context.set_variable(key, value)
-                else:
-                    logger.error("设置变量动作缺少key参数")
-                    return False
-                    
-            else:
-                logger.warning(f"未知的动作类型: {action_type}")
-                return False
-                
-            logger.info(f"动作 {name} 执行完成")
-            return True
-            
-        except Exception as e:
-            logger.error(f"执行动作 {name} 时发生错误: {str(e)}")
-            return False
-    
     def run(self):
         """运行流水线"""
         if not self.config:
@@ -281,7 +206,7 @@ class PipelineEngine:
         actions = self.config.get('actions', [])
         for i, action_config in enumerate(actions):
             logger.info(f"执行第 {i+1}/{len(actions)} 个动作")
-            success = self.execute_action(action_config)
+            success = self.action_executor.execute_action(action_config)
             if not success:
                 logger.error(f"动作执行失败，流水线终止")
                 return
