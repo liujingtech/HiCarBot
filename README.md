@@ -1,112 +1,112 @@
-# HiCarBot - Modern Android Automation Framework
+# HiCarBot - 现代化Android自动化测试框架
 
-HiCarBot is a modern Android automation framework designed with simplicity and reliability in mind. It focuses on direct UI manipulation rather than complex OCR processing, making it fast and accurate.
+HiCarBot是一个现代化的Android自动化测试框架，设计注重简洁性和可靠性。它专注于直接UI操作而非复杂的OCR处理，使其快速且准确。
 
-## Key Features
+## 核心特性
 
-- **Direct UI Manipulation**: Uses UIAutomator2 for reliable UI element interaction
-- **Minimal Dependencies**: Only essential libraries for maximum stability
-- **Clean Architecture**: Well-organized modular structure
-- **Easy to Use**: Simple YAML configuration for defining automation flows
-- **Fast Execution**: No OCR processing overhead
+- **直接UI操作**：使用UIAutomator2进行可靠的UI元素交互
+- **最小依赖**：只包含必要的库以保证最大稳定性
+- **清晰架构**：良好组织的模块化结构
+- **易于使用**：简单的YAML配置定义自动化流程
+- **快速执行**：无OCR处理开销
 
-## Installation
+## 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Make sure you have ADB installed and added to your system PATH.
+确保已安装ADB并添加到系统PATH中。
 
-## Prerequisites
+## 前提条件
 
-Before using HiCarBot, ensure:
+使用HiCarBot之前，请确保：
 
-1. **Android device connected** via USB with USB debugging enabled
-2. **Device screen unlocked** - automation requires visible UI elements
-3. **Bluetooth settings accessible** - the app needs permission to access Bluetooth settings
+1. **Android设备已连接**：通过USB连接并启用USB调试
+2. **设备屏幕已解锁**：自动化需要可见的UI元素
+3. **蓝牙设置可访问**：应用需要访问蓝牙设置的权限
 
-## Usage
+## 使用方法
 
-1. Connect your Android device and enable USB debugging
-2. Ensure the device screen is unlocked
-3. Run the automation pipeline:
+1. 连接Android设备并启用USB调试
+2. 确保设备屏幕已解锁
+3. 运行自动化流水线：
    ```bash
    python run.py <pipeline_config.yaml>
    ```
 
-Or directly:
+或者直接运行：
 ```bash
 python hicarbot/main.py <pipeline_config.yaml>
 ```
 
-## Example
+## 示例
 
-### MVP Bluetooth Toggle
+### MVP蓝牙开关控制
 
-The simplest and most reliable way to ensure Bluetooth is enabled:
+最简单可靠的蓝牙开启方式：
 
 ```yaml
-name: "MVP Bluetooth Toggle"
+name: "MVP蓝牙开关控制"
 version: "1.0"
-description: "Minimal Bluetooth toggle - Open Bluetooth settings and ensure it's enabled"
+description: "最小化蓝牙开关控制 - 打开蓝牙设置并确保已开启"
 
 actions:
-  - name: "Open Bluetooth and ensure enabled"
+  - name: "打开蓝牙并确保开启"
     type: "simple_bluetooth_toggle"
 ```
 
-Run it with:
+运行方式：
 ```bash
 python run.py examples/mvp_bluetooth_toggle.yaml
 ```
 
-This will:
-1. Open the Bluetooth settings page
-2. Check if Bluetooth is enabled
-3. If not enabled, automatically toggle the switch to enable it
+该操作将：
+1. 打开蓝牙设置页面
+2. 检查蓝牙是否已开启
+3. 如果未开启，自动切换开关以开启蓝牙
 
-## Project Structure
+## 项目结构
 
 ```
 HiCarBot/
-├── hicarbot/                 # Main source directory
-│   ├── __init__.py           # Package initializer
-│   ├── main.py               # Main entry point
-│   ├── actions/              # Action implementations
+├── hicarbot/                 # 主源代码目录
+│   ├── __init__.py           # 包初始化文件
+│   ├── main.py               # 主入口点
+│   ├── actions/              # 动作实现模块
 │   │   ├── __init__.py
-│   │   └── simple_bluetooth.py  # Simple Bluetooth toggle action
-│   ├── engine/               # Core execution engine
+│   │   └── simple_bluetooth.py  # 简单蓝牙切换动作
+│   ├── engine/               # 核心执行引擎
 │   │   ├── __init__.py
-│   │   └── pipeline_engine.py  # Pipeline execution engine
-│   ├── models/               # Data models
+│   │   └── pipeline_engine.py  # 流水线执行引擎
+│   ├── models/               # 数据模型
 │   │   ├── __init__.py
-│   │   └── models.py         # Core data structures
-│   └── utils/                # Utility functions
+│   │   └── models.py         # 核心数据结构
+│   └── utils/                # 工具函数
 │       ├── __init__.py
-├── examples/                 # Example configurations
-│   └── mvp_bluetooth_toggle.yaml  # Minimal Bluetooth toggle example
-├── requirements.txt         # Python dependencies
-└── run.py                    # Simple runner script
+├── examples/                 # 示例配置
+│   └── mvp_bluetooth_toggle.yaml  # MVP蓝牙切换示例
+├── requirements.txt         # Python依赖
+└── run.py                    # 简单运行脚本
 ```
 
-## Development
+## 开发指南
 
-### Adding New Actions
+### 添加新动作
 
-1. Create a new action class in `hicarbot/actions/`
-2. Inherit from the base `Action` class
-3. Implement the `execute` method
-4. Register the action in `hicarbot/engine/pipeline_engine.py`
+1. 在`hicarbot/actions/`中创建新的动作类
+2. 继承基础`Action`类
+3. 实现`execute`方法
+4. 在`hicarbot/engine/pipeline_engine.py`中注册动作
 
-### Running Tests
+### 运行测试
 
-Currently no automated tests are implemented. Manual testing is recommended.
+目前未实现自动化测试，推荐手动测试。
 
-## Contributing
+## 贡献
 
-Contributions are welcome! Please submit issues and pull requests to improve HiCarBot.
+欢迎提交Issue和Pull Request来改进HiCarBot项目。
 
-## License
+## 许可证
 
-This project is licensed under the MIT License.
+本项目采用MIT许可证。
