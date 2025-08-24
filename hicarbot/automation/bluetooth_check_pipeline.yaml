@@ -1,0 +1,36 @@
+name: "蓝牙设置检查"
+version: "1.0"
+description: "启动设置应用，找到蓝牙选项，确认蓝牙开关状态"
+
+variables:
+  bluetooth_keyword: "蓝牙"
+
+actions:
+  - name: "启动设置应用"
+    type: "start_app"
+    params:
+      package: "com.android.settings"
+  
+  - name: "等待设置应用加载"
+    type: "wait"
+    params:
+      seconds: 3
+  
+  - name: "截图并OCR识别"
+    type: "ocr"
+  
+  - name: "查找并点击蓝牙设置"
+    type: "click_text"
+    params:
+      text: "{{bluetooth_keyword}}"
+  
+  - name: "等待蓝牙设置页面加载"
+    type: "wait"
+    params:
+      seconds: 2
+  
+  - name: "截图检查蓝牙开关状态"
+    type: "ocr"
+  
+  - name: "检查蓝牙是否开启"
+    type: "check_bluetooth_status"

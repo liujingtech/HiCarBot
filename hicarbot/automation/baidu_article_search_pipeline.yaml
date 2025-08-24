@@ -4,7 +4,6 @@ description: "在百度App中搜索技术文章并收藏感兴趣的内容"
 
 variables:
   search_keyword: "人工智能发展现状"
- 收藏_tag: "技术文章"
 
 actions:
   - name: "启动百度App并截图OCR"
@@ -19,8 +18,6 @@ actions:
     type: "click_text"
     params:
       text: "搜索"
-      retry: 3
-      retry_delay: 1
   
   - name: "输入搜索关键词"
     type: "input"
@@ -31,8 +28,6 @@ actions:
     type: "click_text"
     params:
       text: "百度一下"
-      retry: 3
-      retry_delay: 1
   
   - name: "等待搜索结果加载"
     type: "wait"
@@ -46,9 +41,6 @@ actions:
     type: "click_text"
     params:
       text: "技术"
-      match_strategy: "contains"
-      retry: 3
-      retry_delay: 1
   
   - name: "等待文章页面加载"
     type: "wait"
@@ -62,8 +54,6 @@ actions:
     type: "click_text"
     params:
       text: "收藏"
-      retry: 3
-      retry_delay: 1
   
   - name: "等待收藏操作完成"
     type: "wait"
